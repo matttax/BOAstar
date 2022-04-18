@@ -1,6 +1,7 @@
 #ifndef BOASTAR_NODE_H
 #define BOASTAR_NODE_H
 
+#include <tuple>
 
 class Node {
 public:
@@ -20,16 +21,14 @@ public:
             this->g_safety = g_safety;
         }
         f_length = this->g_length + h;
-        f_safety = this->g_safety + h;
+        f_safety = this->g_safety + h * 0.1;
         this->parent = parent;
     }
 };
 
 struct NodeComparator {
-    bool operator()(const Node* n1, const Node* n2) {
-        if (n1->f_safety < n2->f_safety && n1->f_length < n2->f_length)
-            return false;
-        return true;
+    bool operator()(const Node* n1, const Node* n2) const {
+        return n1->f_safety >= n2->f_safety || n1->f_length >= n2->f_length;
     }
 };
 

@@ -13,40 +13,43 @@ std::string integer_to_Roman(int n) {
     return result;
 }
 
-Search::Search() {
-    std::cin >> height >> width;
+Search::Search(std::string file) {
+    std::ifstream infile(file);
+    infile >> height >> width;
     map = new double *[height];
     for (int i = 0; i < height; ++i) {
         map[i] = new double[width];
         for (int j = 0; j < width; ++j)
-            std::cin >> map[i][j];
+            infile >> map[i][j];
     }
-    std::cin >> start_x >> start_y;
-    std::cin >> finish_x >> finish_y;
-    map[start_x][start_y] = 0;
+    infile >> start_x >> start_y;
+    infile >> finish_x >> finish_y;
+    //map[start_x][start_y] = 0;
 }
 
 std::vector<Node *> Search::boa_star() {
     std::vector<Node*> solutions;
-    Node *start = new Node(start_x, start_y, 0, 0,
+    Node *start = new Node(start_x, start_y, 0, map[start_x][start_y],
                            get_hvalue(start_x, start_y), nullptr);
     Open open;
     open.add(start);
     while (!open.empty()) {
+        //open.print_open();
         Node *current = open.top();
-        if (current->g_safety >= get_gsafety_min(current->i, current->j) &&
+        if (current->g_safety >= get_gsafety_min(current->i, current->j) ||
             current->f_safety >= get_gsafety_min(finish_x, finish_y)) {
             continue;
         }
-        gsafety_min[current->i * width + current->j] = current->g_safety;
+        gsafety_min[std::make_pair(current->i, current->j)] = current->g_safety;
         if (current->i == finish_x && current->j == finish_y) {
-            current->f_safety -= current->f_length;
+            //current->f_safety -= current->f_length;
             solutions.push_back(current);
+            continue;
         }
         auto children = get_children(current->i, current->j);
         for (auto child : children) {
-            double length = (std::abs(child.first) + std::abs(child.second) == 2) ? std::sqrt(2) : 1.0,
-                   safety = map[child.first][child.second] + length;
+            double length = (std::abs(current->i - child.first) + std::abs(current->j - child.second) == 2) ? std::sqrt(2) : 1.0,
+                   safety = map[child.first][child.second] + 0.1 * length;
             Node *child_node = new Node(child.first, child.second, length, safety,
                                        get_hvalue(child.first, child.second), current);
             if (child_node->g_safety >= get_gsafety_min(child.first, child.second) ||
@@ -78,10 +81,9 @@ double Search::get_hvalue(int i, int j) const {
 }
 
 double Search::get_gsafety_min(int i, int j) {
-    int hash = i * width + j;
-    if (gsafety_min.count(hash))
-        return gsafety_min[hash];
-    return INT_MAX;
+    if (gsafety_min.count(std::make_pair(i, j)))
+        return gsafety_min[std::make_pair(i, j)];
+    return std::numeric_limits<double>::max();
 }
 
 void Search::print_solution(Node *node) const {

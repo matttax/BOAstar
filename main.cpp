@@ -2,13 +2,13 @@
 #include "Search.h"
 
 int main() {
-    Search search;
+    Search search("/home/matttax/Документы/test2");
     auto sol = search.boa_star();
     std::reverse(sol.begin(), sol.end());
     std::cout << sol.size() << "\n";
     for (int i = 0; i < sol.size(); ++i) {
         std::cout << sol[i]->f_length << " " << sol[i]->f_safety << "\n";
-        //search.print_solution(sol[i]);
+        search.print_solution(sol[i]);
     }
     return 0;
 }
