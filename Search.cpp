@@ -105,7 +105,7 @@ void Search::print_solution(Node *node) const {
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
             if (map_copy[i][j] == 2) {
-                std::cout << integer_to_Roman(nodes_queue[std::make_pair(i, j)]) << "\t";
+                std::cout << "*\t";
                 map_copy[i][j] = 0;
             } else {
                 std::cout << map_copy[i][j] << "\t";

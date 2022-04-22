@@ -2,7 +2,7 @@
 #include "Search.h"
 
 int main() {
-    Search search("/home/matttax/Документы/test1");
+    Search search("/home/matttax/Документы/test2");
     auto sol = search.boa_star();
     std::cout << sol.size() << "\n";
     for (auto & s : sol) {
