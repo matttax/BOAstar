@@ -11,21 +11,20 @@
 #include <cmath>
 #include "Node.h"
 #include "Open.h"
+#include "Map.h"
 
 class Search {
-public:
-    int width, height;
-    double **map;
-    int start_x, start_y;
-    int finish_x, finish_y;
+private:
+    Map map;
     std::map<std::pair<int, int>, double> gsafety_min;
 
-    Search(std::string file);
+public:
+    Search(const std::string& file);
     std::vector<Node*> boa_star();
-    std::vector<std::pair<int, int>> get_children(int i, int j) const;
-    double get_hvalue(int i, int j) const;
+    std::vector<std::pair<int, int>> get_children(int i, int j);
+    double get_hvalue(int i, int j);
     double get_gsafety_min(int i, int j);
-    void print_solution(Node* node) const;
+    void print_solution(Node* node, std::ofstream &outfile);
 };
 
 #endif //BOASTAR_SEARCH_H

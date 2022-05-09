@@ -1,59 +1,36 @@
+#include <iomanip>
 #include "Search.h"
 
-std::string integer_to_Roman(int n) {
-    std::string str_romans[] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-    int values[] = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-    std::string result;
-    for (int i = 0; i < 13; ++i) {
-        while(n - values[i] >= 0) {
-            result += str_romans[i];
-            n -= values[i];
-        }
-    }
-    return result;
-}
-
-Search::Search(std::string file) {
-    std::ifstream infile(file);
-    infile >> height >> width;
-    map = new double *[height];
-    for (int i = 0; i < height; ++i) {
-        map[i] = new double[width];
-        for (int j = 0; j < width; ++j)
-            infile >> map[i][j];
-    }
-    infile >> start_x >> start_y;
-    infile >> finish_x >> finish_y;
-    //map[start_x][start_y] = 0;
+Search::Search(const std::string& file) {
+    if(!map.read_map(file))
+        exit(-1);
 }
 
 std::vector<Node *> Search::boa_star() {
     std::vector<Node*> solutions;
-    Node *start = new Node(start_x, start_y, 0, map[start_x][start_y],
-                           get_hvalue(start_x, start_y), nullptr);
+    Node *start = new Node(map.get_start_x(), map.get_start_y(), 0, map.get_cell(map.get_start_x(), map.get_start_y()),
+                           get_hvalue(map.get_start_x(), map.get_start_y()), nullptr);
     Open open;
     open.add(start);
     while (!open.empty()) {
-        //open.print_open();
         Node *current = open.top();
         if (current->g_safety >= get_gsafety_min(current->i, current->j) ||
-            current->f_safety >= get_gsafety_min(finish_x, finish_y)) {
+            current->f_safety >= get_gsafety_min(map.get_finish_x(), map.get_finish_y())) {
             continue;
         }
         gsafety_min[std::make_pair(current->i, current->j)] = current->g_safety;
-        if (current->i == finish_x && current->j == finish_y) {
-            //current->f_safety -= current->f_length;
+        if (current->i == map.get_finish_x() && current->j == map.get_finish_y()) {
             solutions.push_back(current);
             continue;
         }
         auto children = get_children(current->i, current->j);
         for (auto child : children) {
             double length = (std::abs(current->i - child.first) + std::abs(current->j - child.second) == 2) ? std::sqrt(2) : 1.0,
-                   safety = map[child.first][child.second] + 0.1 * length;
+                   safety = map.get_cell(child.first, child.second) + 0.1 * length;
             Node *child_node = new Node(child.first, child.second, length, safety,
                                        get_hvalue(child.first, child.second), current);
             if (child_node->g_safety >= get_gsafety_min(child.first, child.second) ||
-                child_node->f_safety >= get_gsafety_min(finish_x, finish_y)) {
+                child_node->f_safety >= get_gsafety_min(map.get_finish_x(), map.get_finish_y())) {
                 continue;
             }
             open.add(child_node);
@@ -62,22 +39,37 @@ std::vector<Node *> Search::boa_star() {
     return solutions;
 }
 
-std::vector<std::pair<int, int>> Search::get_children(int i, int j) const {
+std::vector<std::pair<int, int>> Search::get_children(int i, int j) {
     std::vector<std::pair<int, int>> children;
     std::vector<std::pair<int, int>> moves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0},
                                               {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
     for (auto mov : moves) {
-        if (mov.first + i >= 0 && mov.first + i < height && mov.second + j >= 0 && mov.second + j < width)
-            if (map[mov.first + i][mov.second + j] != 1)
-                children.emplace_back(mov.first + i, mov.second + j);
+        if (map.is_walkable(mov.first + i, mov.second + j)) {
+            if (mov.first * mov.second != 0) {
+                if (!map.allow_diagonal)
+                    continue;
+                if (!map.allow_cut_corners) {
+                    if (map.is_walkable(i, j + mov.second) && map.is_walkable(i + mov.first, j))
+                        children.emplace_back(i + mov.first, j + mov.second);
+                } else if (!map.allow_squeeze) {
+                    if (map.is_walkable(i, j + mov.second) || map.is_walkable(i + mov.first, j))
+                        children.emplace_back(i + mov.first, j + mov.second);
+                } else children.emplace_back(i + mov.first, j + mov.second);
+            } else children.emplace_back(i + mov.first, j + mov.second);
+        }
     }
     return children;
 }
 
-double Search::get_hvalue(int i, int j) const {
-    int dx = std::abs(finish_x - i);
-    int dy = std::abs(finish_y - j);
-    return std::sqrt(dx * dx + dy * dy);
+double Search::get_hvalue(int i, int j) {
+    int dx = std::abs(map.get_finish_x() - i);
+    int dy = std::abs(map.get_finish_y() - j);
+    switch (map.get_heuristic()) {
+        case OCTILE: return (std::abs(dx - dy) + std::sqrt(2) * std::min(dx, dy));
+        case MANHATTAN: return (dx + dy);
+        case EUCLID: return std::sqrt(dx * dx + dy * dy);
+        case CHEBYSHEV: return std::max(dx, dy);
+    }
 }
 
 double Search::get_gsafety_min(int i, int j) {
@@ -86,32 +78,29 @@ double Search::get_gsafety_min(int i, int j) {
     return std::numeric_limits<double>::max();
 }
 
-void Search::print_solution(Node *node) const {
+void Search::print_solution(Node *node, std::ofstream &outfile) {
+    outfile << std::fixed << std::setprecision(1);
     Node *current = node;
-    auto **map_copy = new double *[height];
-    for (int i = 0; i < height; ++i) {
-        map_copy[i] = new double[width];
-        for (int j = 0; j < width; ++j) {
-            map_copy[i][j] = map[i][j];
+    auto **map_copy = new double *[map.get_height()];
+    for (int i = 0; i < map.get_height(); ++i) {
+        map_copy[i] = new double[map.get_width()];
+        for (int j = 0; j < map.get_width(); ++j) {
+            map_copy[i][j] = map.get_cell(i, j);
         }
     }
-    std::map<std::pair<int, int>, int> nodes_queue;
-    int order = 1;
     while (current) {
-        nodes_queue[std::make_pair(current->i, current->j)] = order++;
         map_copy[current->i][current->j] = 2;
         current = current->parent;
     }
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+    for (int i = 0; i < map.get_height(); ++i) {
+        outfile << "\t\t\t<row>";
+        for (int j = 0; j < map.get_width(); ++j) {
             if (map_copy[i][j] == 2) {
-                std::cout << "*\t";
-                map_copy[i][j] = 0;
+                outfile << "*   ";
             } else {
-                std::cout << map_copy[i][j] << "\t";
+                outfile << map_copy[i][j] << " ";
             }
         }
-        std::cout << "\n";
+        outfile << "</row>\n";
     }
-    std::cout << "\n";
 }
