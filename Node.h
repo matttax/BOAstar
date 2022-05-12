@@ -28,7 +28,9 @@ public:
 
 struct NodeComparator {
     bool operator()(const Node* n1, const Node* n2) const {
-        return n1->f_danger >= n2->f_danger || n1->f_length >= n2->f_length;
+        if (n1->f_length == n2->f_length)
+            return n1->f_danger > n2->f_danger;
+        return n1->f_length > n2->f_length;
     }
 };
 

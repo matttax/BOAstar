@@ -2,17 +2,17 @@
 #define BOASTAR_OPEN_H
 
 #include <set>
+#include <queue>
 #include "Node.h"
 
 class Open {
 private:
-std::set<Node*, NodeComparator> open;
+std::priority_queue<Node*, std::vector<Node*>, NodeComparator> open;
 
 public:
     void add(Node* node);
     Node *top();
     bool empty();
-    void print_open();
 };
 
 

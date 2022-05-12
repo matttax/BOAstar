@@ -3,9 +3,9 @@
 #include "Search.h"
 
 int main() {
-    std::string file_name = "/home/matttax/Документы/test3.xml";
+    std::string file_name = R"(C:\Users\1661322\CLionProjects\BOAstar\Tests\test2.xml)";
     Search search(file_name);
-    std::ofstream outfile(file_name + "_log");
+    std::ofstream outfile("/Tests/tt.xml");
     auto start_time = std::chrono::steady_clock::now();
     auto sol = search.boa_star();
     auto end_time = std::chrono::steady_clock::now();
