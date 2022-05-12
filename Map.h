@@ -17,26 +17,30 @@ enum Heuristic {
 class Map {
 private:
     int height, width;
-    int start_x, start_y;
-    int finish_x, finish_y;
+    int start_y, start_x;
+    int finish_y, finish_x;
+    bool visualize;
+    bool is_biobjective;
+    bool allow_squeeze, allow_diagonal, allow_cut_corners;
     Heuristic heuristic;
-
     double **grid;
-
-    int get_number(std::string line, const std::string &attribute, bool &present);
-    bool get_boolean(std::string line, const std::string &attribute);
+    std::string logfile;
+    bool get_number(int &number, std::string line, const std::string &tag);
+    bool get_boolean(bool &boolean, std::string line, const std::string &tag);
+    bool get_string(std::string &line, const std::string &tag);
 
 public:
     Map();
     ~Map();
-    bool is_biobjective;
-    bool allow_squeeze, allow_diagonal, allow_cut_corners;
     int get_height() const;
     int get_width() const;
-    int get_start_x() const;
     int get_start_y() const;
-    int get_finish_x() const;
+    int get_start_x() const;
     int get_finish_y() const;
+    int get_finish_x() const;
+    bool squeeze_allowed() const;
+    bool diagonal_allowed() const;
+    bool corners_allowed() const;
     double get_cell(int i, int j);
     bool is_walkable(int i, int j);
     bool read_map(const std::string& filename);
