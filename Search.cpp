@@ -17,12 +17,12 @@ std::vector<Node *> Search::boa_star() {
     while (!open.empty()) {
         Node *current = open.top();
         //std::cout<<current->i<<" "<<current->j<<"\n";
-        if (current->g_safety >= get_gsafety_min(current->i, current->j) ||
-            current->f_safety >= get_gsafety_min(map.get_finish_y(), map.get_finish_x())) {
+        if (current->g_danger >= get_min_gdanger(current->i, current->j) ||
+            current->f_danger >= get_min_gdanger(map.get_finish_y(), map.get_finish_x())) {
             skips++;
             continue;
         }
-        gsafety_min[std::make_pair(current->i, current->j)] = current->g_safety;
+        gdanger_min[std::make_pair(current->i, current->j)] = current->g_danger;
         if (current->i == map.get_finish_y() && current->j == map.get_finish_x()) {
             solutions.push_back(current);
             continue;
@@ -30,11 +30,11 @@ std::vector<Node *> Search::boa_star() {
         auto children = get_children(current->i, current->j);
         for (auto child : children) {
             double length = (std::abs(current->i - child.first) + std::abs(current->j - child.second) == 2) ? std::sqrt(2) : 1.0,
-                   safety = map.get_cell(child.first, child.second) + 0.1 * length;
-            Node *child_node = new Node(child.first, child.second, length, safety,
-                                       get_hvalue(child.first, child.second), current);
-            if (child_node->g_safety >= get_gsafety_min(child.first, child.second) ||
-                child_node->f_safety >= get_gsafety_min(map.get_finish_y(), map.get_finish_x())) {
+                   danger = map.get_cell(child.first, child.second) + 0.1 * length;
+            Node *child_node = new Node(child.first, child.second, length, danger,
+                                        get_hvalue(child.first, child.second), current);
+            if (child_node->g_danger >= get_min_gdanger(child.first, child.second) ||
+                child_node->f_danger >= get_min_gdanger(map.get_finish_y(), map.get_finish_x())) {
                 skips++;
                 continue;
             }
@@ -80,16 +80,16 @@ double Search::get_hvalue(int i, int j) {
     }
 }
 
-double Search::get_gsafety_min(int i, int j) {
-    if (gsafety_min.count(std::make_pair(i, j)))
-        return gsafety_min[std::make_pair(i, j)];
+double Search::get_min_gdanger(int i, int j) {
+    if (gdanger_min.count(std::make_pair(i, j)))
+        return gdanger_min[std::make_pair(i, j)];
     return std::numeric_limits<double>::max();
 }
 
 void Search::print_solution(Node *node, std::ofstream &outfile) {
     outfile << "\t\t<solution>\n";
     outfile << "\t\t\t<length>" << node->f_length << "</length>\n";
-    outfile << "\t\t\t<safety>" << node->f_safety << "</safety>\n";
+    outfile << "\t\t\t<danger>" << node->f_danger << "</danger>\n";
     outfile << "\t\t\t<path>\n";
     Node *current = node;
     std::vector<std::pair<int, int>> nodes;

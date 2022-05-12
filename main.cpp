@@ -3,7 +3,7 @@
 #include "Search.h"
 
 int main() {
-    std::string file_name = "/home/matttax/Документы/test6";
+    std::string file_name = "/home/matttax/Документы/test3.xml";
     Search search(file_name);
     std::ofstream outfile(file_name + "_log");
     auto start_time = std::chrono::steady_clock::now();

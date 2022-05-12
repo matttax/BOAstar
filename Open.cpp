@@ -18,7 +18,7 @@ bool Open::empty() {
 
 void Open::print_open() {
     for (auto n : open) {
-        std::cout << "[" << n->i << " " << n->j << " " << n->f_length << " " << n->f_safety << "]";
+        std::cout << "[" << n->i << " " << n->j << " " << n->f_length << " " << n->f_danger << "]";
     }
     std::cout << "\n";
 }

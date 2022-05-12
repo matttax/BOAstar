@@ -1,0 +1,19 @@
+<map>
+	<height>5</height>
+	<width>5</width>
+	<grid>
+		<row>0.9 0.9 0.0 0.0 0.1</row>
+		<row>1.0 0.0 0.0 0.0 0.2</row>
+		<row>0.7 0.1 0.9 0.1 0.1</row>
+		<row>0.9 0.3 0.1 0.9 0.0</row>
+		<row>0.7 0.3 0.1 0.0 0.9</row>
+	</grid>
+	<startx>0</startx>
+	<starty>0</starty>
+	<finishx>4</finishx>
+	<finishy>0</finishy>
+	<allowdiagonal>true</allowdiagonal>
+	<cutcorners>true</cutcorners>
+	<allowsqueeze>true</allowsqueeze>
+	<biobjective>true</biobjective>
+</map>

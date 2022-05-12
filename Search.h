@@ -25,14 +25,14 @@ class Search {
 private:
     Map map;
     std::unordered_set<std::pair<int, int>, pair_hash> opened;
-    std::map<std::pair<int, int>, double> gsafety_min;
+    std::map<std::pair<int, int>, double> gdanger_min;
 
 public:
     Search(const std::string& file);
     std::vector<Node*> boa_star();
     std::vector<std::pair<int, int>> get_children(int i, int j);
     double get_hvalue(int i, int j);
-    double get_gsafety_min(int i, int j);
+    double get_min_gdanger(int i, int j);
     void print_solution(Node* node, std::ofstream &outfile);
     void print_map(std::ofstream &outfile);
     void print_opened(std::ofstream &outfile);
