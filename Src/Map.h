@@ -41,6 +41,8 @@ public:
     bool squeeze_allowed() const;
     bool diagonal_allowed() const;
     bool corners_allowed() const;
+    bool do_visualize() const;
+    std::string get_logfile_name() const;
     double get_cell(int i, int j);
     bool is_walkable(int i, int j);
     bool read_map(const std::string& filename);

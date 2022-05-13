@@ -16,4 +16,5 @@
 	<cutcorners>true</cutcorners>
 	<allowsqueeze>true</allowsqueeze>
 	<biobjective>true</biobjective>
+	<visualize>true</visualize>
 </map>

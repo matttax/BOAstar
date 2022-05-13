@@ -30,4 +30,5 @@
 	<finishx>23</finishx>
 	<finishy>20</finishy>
 	<biobjective>false</biobjective>
+	<visualize>true</visualize>
 </map>

@@ -13,6 +13,8 @@ Map::Map() {
     allow_squeeze = true;
     allow_cut_corners = true;
     heuristic = EUCLID;
+    visualize = false;
+    logfile = "noname";
 }
 
 Map::~Map() {
@@ -81,7 +83,6 @@ bool Map::read_map(const std::string& filename) {
             return false;
         }
         name = std::string(line.begin() + open_index + 1, line.begin() + close_index);
-        //std::cout << name << "\n";
         if (!map_open) {
             if (name == "map") {
                 map_open = true;
@@ -188,13 +189,10 @@ bool Map::read_map(const std::string& filename) {
     }
     if (!is_biobjective)
         reformat_map();
-    if (width > 100 || height > 100)
+    if (width > 60 || height > 60) {
         visualize = false;
-//    std::cout << start_y << " " << height << "\n";
-//    std::cout << start_x << " " << width << "\n";
-//    std::cout << finish_y << " " << height << "\n";
-//    std::cout << finish_x << " " << width << "\n";
-//    std::cout << grid[start_y][start_x] << " " << grid[finish_y][finish_x] << "\n";
+        std::cout << "Map is too large for visualization.\n";
+    }
     if (!map_closed) {
         std::cout << "Map tag isn't closed.\n";
         return false;
@@ -296,4 +294,12 @@ bool Map::get_string(std::string &line, const std::string &tag) {
         return false;
     }
     return true;
+}
+
+bool Map::do_visualize() const {
+    return visualize;
+}
+
+std::string Map::get_logfile_name() const {
+    return logfile;
 }

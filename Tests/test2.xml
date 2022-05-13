@@ -36,4 +36,5 @@
         <allowdiagonal>true</allowdiagonal>
         <cutcorners>false</cutcorners>
         <allowsqueeze>false</allowsqueeze>
+        <visualize>true</visualize>
     </map>

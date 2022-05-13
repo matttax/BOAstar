@@ -143,3 +143,11 @@ void Search::print_opened(std::ofstream &outfile) {
         outfile << "\t\t<node>" << node.first << " " << node.second << "</node>\n";
     outfile << "\t</opened>\n";
 }
+
+bool Search::visualize() {
+    return map.do_visualize();
+}
+
+std::string Search::get_logfile() {
+    return map.get_logfile_name();
+}
