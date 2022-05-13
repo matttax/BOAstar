@@ -1,1 +1,2 @@
-*.pyd linguist-language=Python
+*.pyd linguist-vendored
+*.dll linguist-vendored
