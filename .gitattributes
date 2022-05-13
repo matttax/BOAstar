@@ -1,2 +1,3 @@
 *.pyd linguist-vendored
 *.dll linguist-vendored
+*.tcl linguist-vendored
