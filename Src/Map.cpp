@@ -122,6 +122,8 @@ bool Map::read_map(const std::string& filename) {
                     std::string(line.begin() + open_index + 1, line.begin() + close_index) == "/row") {
                 std::istringstream row(std::string(line.begin(), line.begin() + open_index));
                 while (current_col < width && row >> grid[current_row][current_col]) {
+                    if (grid[current_row][current_col] > 1 || grid[current_row][current_col] < 0)
+                        grid[current_row][current_col] = 1;
                     current_col++;
                 }
                 current_col = 0;
