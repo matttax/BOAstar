@@ -27,7 +27,7 @@ private:
     std::string logfile;
     bool get_number(int &number, std::string line, const std::string &tag);
     bool get_boolean(bool &boolean, std::string line, const std::string &tag);
-    bool get_string(std::string &line, const std::string &tag);
+    bool get_string(std::string &line, std::string &value, const std::string &tag);
 
 public:
     Map();

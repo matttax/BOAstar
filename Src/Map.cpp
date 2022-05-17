@@ -172,11 +172,12 @@ bool Map::read_map(const std::string& filename) {
                     return false;
         } else if (name == "logfile") {
             line.erase(line.begin(), line.begin() + close_index + 1);
-            if (!get_string(logfile, name))
+            if (!get_string(line, logfile, name))
                 return false;
         } else if (name == "heuristic") {
+            line.erase(line.begin(), line.begin() + close_index + 1);
             std::string h;
-            if (!get_string(h, name))
+            if (!get_string(line, h, name))
                 return false;
             if (h == "euclid")
                 heuristic = EUCLID;
@@ -285,12 +286,12 @@ bool Map::corners_allowed() const {
     return allow_cut_corners;
 }
 
-bool Map::get_string(std::string &line, const std::string &tag) {
+bool Map::get_string(std::string &line, std::string &value, const std::string &tag) {
     size_t open_index = line.find('<'),
             close_index = line.find('>');
     if (open_index != SIZE_MAX && close_index != SIZE_MAX &&
             std::string(line.begin() + open_index + 1, line.begin() + close_index) == "/" + tag) {
-        line = std::string(line.begin(), line.begin() + open_index);
+        value = std::string(line.begin(), line.begin() + open_index);
     } else {
         std::cout << "Tag " + tag << " isn't closed.\n";
         return false;

@@ -46,5 +46,6 @@
 	<finishx>25</finishx>
 	<finishy>36</finishy>
 	<biobjective>false</biobjective>
+	<heuristic>chebyshev</heuristic>
 	<visualize>true</visualize>
 </map>
