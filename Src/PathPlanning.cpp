@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
         if (sol.size() == 0) {
             std::cout << "Nothing to visualize.";
         } else {
-//            std::string command = "start PathVisualizer\\PathVisualizer.exe " + logfile_name;
-//            system(command.c_str());
+            std::string command = "start PathVisualizer\\PathVisualizer.exe " + logfile_name;
+            system(command.c_str());
         }
     }
     return 0;
